@@ -40,6 +40,24 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * AuthenticationManager получает запрос на аутентификацию и передает этот запрос AuthenticationProvider.
+     *
+     * @param configuration содержит настройки аутентификации для приложения.
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    /**
+     * DaoAuthenticationProvider представляет собой реализацию AuthenticationProvider,
+     * которая использует UserDetailsService и PasswordEncoder для аутентификации имени пользователя и пароля.
+     * Если проверка прошла успешно, AuthenticationProvider создает объект Authentication,
+     * который содержит информацию о пользователе (например, его роли и права доступа).
+     * Этот объект возвращается обратно в AuthenticationManager.
+     * После успешной аутентификации AuthenticationManager обновляет контекст безопасности с помощью SecurityContextHolder.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -53,8 +71,5 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+
 }

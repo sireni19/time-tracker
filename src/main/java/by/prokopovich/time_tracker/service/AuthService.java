@@ -1,9 +1,10 @@
 package by.prokopovich.time_tracker.service;
 
-import by.prokopovich.time_tracker.dto.JwtAuthenticationResponse;
-import by.prokopovich.time_tracker.dto.RefreshTokenRequest;
-import by.prokopovich.time_tracker.dto.SignInRequest;
-import by.prokopovich.time_tracker.dto.SignUpRequest;
+import by.prokopovich.time_tracker.dto.response.JwtAuthenticationResponse;
+import by.prokopovich.time_tracker.dto.request.RefreshTokenRequest;
+import by.prokopovich.time_tracker.dto.request.SignInRequest;
+import by.prokopovich.time_tracker.dto.request.SignUpRequest;
+import by.prokopovich.time_tracker.dto.response.UserSignUpResponse;
 import by.prokopovich.time_tracker.entity.Role;
 import by.prokopovich.time_tracker.entity.User;
 import by.prokopovich.time_tracker.repository.UserRepository;
@@ -24,7 +25,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public User signUp(SignUpRequest request) {
+    public UserSignUpResponse signUp(SignUpRequest request) {
         User user = User.builder()
                 .firstname(request.firstname())
                 .lastname(request.lastname())
@@ -32,8 +33,14 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.valueOf(request.role()))
                 .build();
-
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return UserSignUpResponse.builder()
+                .id(savedUser.getId())
+                .firstname(savedUser.getFirstname())
+                .lastname(savedUser.getLastname())
+                .email(savedUser.getEmail())
+                .role(String.valueOf(savedUser.getRole()))
+                .build();
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {

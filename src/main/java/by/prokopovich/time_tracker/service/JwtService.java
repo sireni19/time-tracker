@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
@@ -17,8 +18,17 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret;
+    private final Duration jwtAccessLifetime;
+    private final Duration jwtRefreshLifetime;
+
+    public JwtService(@Value("${jwt.secret}") String secret,
+                      @Value("${jwt.lifetimeAccess}") Duration jwtAccessLifetime,
+                      @Value("${jwt.lifetimeRefresh}") Duration jwtRefreshLifetime) {
+        this.secret = secret;
+        this.jwtAccessLifetime = jwtAccessLifetime;
+        this.jwtRefreshLifetime = jwtRefreshLifetime;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -28,7 +38,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtAccessLifetime.toMillis()))
                 .signWith(getSignatureKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -65,7 +75,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 604800000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtRefreshLifetime.toMillis()))
                 .signWith(getSignatureKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
