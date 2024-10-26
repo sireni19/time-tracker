@@ -42,7 +42,6 @@ public class SecurityConfiguration {
 
     /**
      * AuthenticationManager получает запрос на аутентификацию и передает этот запрос AuthenticationProvider.
-     *
      * @param configuration содержит настройки аутентификации для приложения.
      */
     @Bean
@@ -70,6 +69,4 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }
