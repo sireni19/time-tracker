@@ -16,22 +16,26 @@ import java.util.UUID;
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query("""
-            SELECT new by.prokopovich.time_tracker.projection.RecordProjection(r.id, r.description, r.createdAt, r.createdBy) 
+            SELECT new by.prokopovich.time_tracker.projection.RecordProjection(r.id, r.description, r.createdAt, r.createdBy, r.hours) 
             FROM Record r 
             WHERE r.worker.id = :userId
             """)
     List<RecordProjection> findAllUserRecords(@Param("userId") UUID userId);
 
-    @Modifying
+    /*
+    За счет аннотации @Modifying выполняется один запрос сразу к базе данных, минуя кеш 1-го уровня
+     */
+    @Modifying(clearAutomatically = true)
     @Query("""
-            UPDATE Record r SET r.description = :description, r.createdAt = :createdAt 
+            UPDATE Record r SET r.description = :description, r.createdAt = :createdAt, r.hours = :hours 
             WHERE r.id = :recordId AND r.worker.id = :userId""")
     int updateUserRecord(@Param("recordId") Long recordId,
                          @Param("userId") UUID userId,
                          @Param("description") String description,
-                         @Param("createdAt") LocalDateTime createdAt);
+                         @Param("createdAt") LocalDateTime createdAt,
+                         @Param("hours") Byte hours);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Record r WHERE r.id = :recordId AND r.worker.id = :userId")
     int deleteByIdAndUserId(@Param("recordId") Long recordId, @Param("userId") UUID userId);
 

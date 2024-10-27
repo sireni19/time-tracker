@@ -5,6 +5,7 @@ import by.prokopovich.time_tracker.dto.response.RecordResponse;
 import by.prokopovich.time_tracker.entity.User;
 import by.prokopovich.time_tracker.projection.RecordProjection;
 import by.prokopovich.time_tracker.service.RecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class RecordController {
     private final RecordService recordService;
 
     @PostMapping("/create")
-    public ResponseEntity<RecordResponse> createRecord(@RequestBody CreateOrUpdateRecordRequest request) {
+    public ResponseEntity<RecordResponse> createRecord(@Valid @RequestBody CreateOrUpdateRecordRequest request) {
         // Получаем текущего авторизованного пользователя
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -51,7 +52,7 @@ public class RecordController {
 
     @PatchMapping("/update/{recordId}")
     public ResponseEntity<String> updateRecord(@PathVariable(name = "recordId") Long recordId,
-                                               @RequestBody CreateOrUpdateRecordRequest request) {
+                                                @Valid @RequestBody CreateOrUpdateRecordRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.getPrincipal() instanceof User user) {

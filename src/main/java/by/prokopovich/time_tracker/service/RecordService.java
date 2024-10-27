@@ -31,13 +31,19 @@ public class RecordService {
         fullName.append(" ").append(user.getLastname()).append("(").append(username).append(")");
 
         Record savedRecord = recordRepository.save(
-                new Record(request.description(), user, LocalDateTime.parse(request.createdAt(), AuxiliaryElements.DATE_FORMAT), fullName.toString()));
+                new Record(
+                        request.description(),
+                        user,
+                        LocalDateTime.parse(request.createdAt(), AuxiliaryElements.DATE_FORMAT),
+                        fullName.toString(),
+                        request.hours()));
 
         return RecordResponse.builder()
                 .id(savedRecord.getId())
                 .description(savedRecord.getDescription())
                 .date(savedRecord.getCreatedAt())
                 .author(savedRecord.getCreatedBy())
+                .hours(savedRecord.getHours())
                 .build();
     }
 
@@ -49,7 +55,11 @@ public class RecordService {
     @Transactional
     public String updateUserRecord(Long recordId, UUID userId, CreateOrUpdateRecordRequest request) {
         int updatedRows = recordRepository
-                .updateUserRecord(recordId, userId, request.description(), LocalDateTime.parse(request.createdAt(), AuxiliaryElements.DATE_FORMAT));
+                .updateUserRecord(recordId,
+                        userId,
+                        request.description(),
+                        LocalDateTime.parse(request.createdAt(), AuxiliaryElements.DATE_FORMAT),
+                        request.hours());
         if (updatedRows == 1) {
             return "Запись была успешно обновлена";
         } else {

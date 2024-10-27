@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "records")
 @Data
 @NoArgsConstructor
-//TODO: создать индекс на поле user_id
+//TODO: создать индекс на поле user_id, добавить поле затраченных часов
 public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +34,13 @@ public class Record {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
     private String createdBy;
+    private Byte hours;
 
-    public Record(String description, User worker, LocalDateTime createdAt, String createdBy) {
+    public Record(String description, User worker, LocalDateTime createdAt, String createdBy,Byte hours) {
         this.description = description;
         this.worker = worker;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
+        this.hours = hours;
     }
 }

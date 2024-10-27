@@ -12,4 +12,5 @@ public class RecordProjection {
     private String description;
     private LocalDateTime createdAt;
     private String createdBy;
+    private Byte hours;
 }
