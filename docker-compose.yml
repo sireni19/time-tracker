@@ -1,6 +1,19 @@
 version: '3.7'
 
 services:
+  app:
+#    image: michelep98/time-tracker:latest раскомментируйте эту строку и закомментируйте 3 следующие строки, если хотите загрузить образ из dockerhub
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/time-tracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - db
   db:
     image: postgres:15.8
     restart: always

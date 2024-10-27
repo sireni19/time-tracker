@@ -1,6 +1,7 @@
 package by.prokopovich.time_tracker.controller.handler;
 
 import by.prokopovich.time_tracker.exception.ErrorResponse;
+import by.prokopovich.time_tracker.exception.IllegalRecordIdException;
 import jakarta.persistence.EntityExistsException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestExceptions(IllegalArgumentException ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST,request);
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({EntityExistsException.class, ConstraintViolationException.class})
     public ResponseEntity<ErrorResponse> handleDuplicateEntityException(Exception ex, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT,request);
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(IllegalRecordIdException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalRecordIdException(IllegalRecordIdException ex, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
