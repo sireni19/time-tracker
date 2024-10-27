@@ -2,6 +2,8 @@ package by.prokopovich.time_tracker.repository;
 
 import by.prokopovich.time_tracker.entity.Record;
 import by.prokopovich.time_tracker.projection.RecordProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,19 +11,23 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query("""
-            SELECT new by.prokopovich.time_tracker.projection.RecordProjection(r.id, r.description, r.createdAt, r.createdBy, r.hours) 
-            FROM Record r 
-            WHERE r.worker.id = :userId
-            """)
-    List<RecordProjection> findAllUserRecords(@Param("userId") UUID userId);
-
+        SELECT new by.prokopovich.time_tracker.projection.RecordProjection(
+            r.id, 
+            r.description, 
+            r.createdAt, 
+            r.createdBy, 
+            r.hours
+        ) 
+        FROM Record r 
+        WHERE r.worker.id = :userId
+        """)
+    Page<RecordProjection> findAllUserRecords(@Param("userId") UUID userId, Pageable pageable);
     /*
     За счет аннотации @Modifying выполняется один запрос сразу к базе данных, минуя кеш 1-го уровня
      */
