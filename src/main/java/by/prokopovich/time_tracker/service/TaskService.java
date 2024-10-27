@@ -108,7 +108,7 @@ public class TaskService {
                             (Byte) row[7] // hours
                     );
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         // Добавляем записи к задаче
         if (taskDetails != null) {
@@ -126,4 +126,5 @@ public class TaskService {
             return "Не удалось удалить задачу";
         }
     }
+
 }
